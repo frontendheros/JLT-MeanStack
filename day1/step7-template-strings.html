@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        let heroes = [
+            {
+            title : "Batman",
+            city : "Gotham"
+            },
+            {
+            title : "Superman",
+            city : "Metropolis"
+            },
+            {
+            title : "Ironman",
+            city : "New York"
+            }
+        ]
+        window.onload = function(){
+            let elm = document.getElementsByTagName("ul")[0];
+            for(let i = 0; i < heroes.length ; i++ ){
+                // document.getElementsByTagName("ul")[0].innerHTML += "<li>"+ heroes[i].title+" | "+ heroes[i].city+" </li>"
+                elm.innerHTML += `
+                <li>
+                    ${ heroes[i].title.toUpperCase() } | 
+                    ${ heroes[i].city } 
+                </li>
+                `;
+            }
+        }
+    </script>
+</head>
+<body>
+    <ul></ul>
+</body>
+</html>

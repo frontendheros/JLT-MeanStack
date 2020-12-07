@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        /*
+        let cart = {
+            getCostPrice : function(){
+                return 100;
+            },
+            getSellingPrice : function(){
+                let scope = this;
+                let calculateMargin = function(){
+                    return scope.getCostPrice() * 0.2;
+                }
+                //return this.getCostPrice() + calculateMargin.call(this);
+                // return this.getCostPrice() + calculateMargin.apply(this);
+                // return this.getCostPrice() + calculateMargin.bind(this)();
+                return this.getCostPrice() + calculateMargin();
+            }
+        };
+    */
+   function getCostPrice(){
+       return 10
+   }
+    let cart = {
+        getCostPrice : function(){
+            return 100;
+        },
+        getSellingPrice : function(){
+            let calculateMargin = () => {
+                return this.getCostPrice() * 0.2;
+            }
+            return this.getCostPrice() + calculateMargin();
+        }
+    };
+    console.log(cart.getSellingPrice()); // 120 
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

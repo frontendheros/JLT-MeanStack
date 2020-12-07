@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        /*
+        let hero = "Batman";
+        console.log(hero);// Batman;
+        hero = "Joker";// error
+        console.log(hero);// Batman;
+        */
+        let hero = {
+            title : "Batman",
+            firstName : "Bruce",
+            lastName : "Wayne",
+            city : "Gotham"
+        };
+/*
+let comichero = hero;
+console.log(hero.title);// Batman
+console.log(comichero.title);// Batman
+comichero.title = "Joker";
+console.log(comichero.title);// Joker
+console.log(hero.title);// ???
+*/
+/*
+let herotitle = hero.title,
+herofirstname = hero.firstname,
+herolastname = hero.lastname,
+herocity = hero.city;
+*/
+/*
+let {   title : herotitle, 
+        firstName : herofirstname, 
+        lastName : herolastname, 
+        city : herocity } = hero;
+    
+    console.log(hero.title, herotitle);
+    herotitle = "Joker";
+    console.log(hero.title, herotitle);
+    */
+   let { title, firstName, lastName, city } = hero;
+       
+       title = "Joker";
+       console.log(hero.title, title);
+    </script>
+</head>
+<body>
+    
+</body>
+</html>
