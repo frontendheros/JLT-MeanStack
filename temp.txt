@@ -1,115 +1,3 @@
-import { Component, OnInit } from '@angular/core';
-import { HeroService } from './heroservices';
-
-@Component({
-  selector: 'app-root',
-  template : `
-  <label for="heroname"> Hero Name : </label>
-  <input [(ngModel)]="hero.username" id="heroname" type="text">
-  <br>
-  <label for="heromail"> Hero Mail : </label>
-  <input [(ngModel)]="hero.usermail" id="heromail" type="text">
-  <br>
-  <label for="herocity"> Hero City : </label>
-  <input [(ngModel)]="hero.usercity" id="herocity" type="text">
-  <br>
-  <button (click)="addHero()">Add New Hero</button>
-  <hr>
-  <ol>
-    <li *ngFor="let hero of heroarray">
-     Name :  {{ hero.username }} | 
-     eMail : {{ hero.usermail }} |
-     City : {{ hero.usercity }}
-     <button (click)="editThisHero(hero)">Edit</button>
-     <button (click)="deleteThisHero(hero)">Delete</button>
-    </li>
-  </ol>
-  `,
-})
-export class AppComponent implements OnInit{
-  title = 'steps';
-  heroarray;
-  hero = {
-    username : '',
-    usermail : '',
-    usercity : ''
-  };
-  constructor(private hs : HeroService){}
-  
-  ngOnInit(){
-    this.reload();
-  }
-  reload(){
-    this.hs.getHeros().subscribe( res => {
-      this.heroarray = res;
-    });
-  }
-
-  addHero(){
-    this.hs.postHero(this.hero).subscribe( res => {
-      this.reload();
-      this.hero = {
-        username : '',
-        usermail : '',
-        usercity : ''
-      }
-    });
-  }
-
-  deleteThisHero(hero){
-    this.hs.deleteHero(hero).subscribe( res => {
-      this.reload();
-    })
-  }
-}
-
-
-===========================================================================================
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-
-@Injectable()
-export class HeroService{
-    constructor( private http:HttpClient ){}
-    getHeros(){
-        return this.http.get("http://localhost:4040/data");
-    }
-    postHero(hero){
-        return this.http.post("http://localhost:4040/data", hero);
-    }
-    getSelectedHero(hero){
-        return this.http.get("http://localhost:4040/data/"+hero._id);
-    }
-    updateHero(hero){
-        return this.http.post("http://localhost:4040/data/"+hero._id, hero);
-    }
-    deleteHero(hero){
-        console.log("delete was called");
-        return this.http.delete("http://localhost:4040/delete/"+hero._id);
-    }
-}
-===========================================================================================
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
-import { HttpClientModule } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';
-
-import { AppComponent } from './app.component';
-import { HeroService } from './heroservices';
-
-@NgModule({
-  declarations: [
-    AppComponent
-  ],
-  imports: [
-    BrowserModule, HttpClientModule, FormsModule
-  ],
-  providers: [ HeroService ],
-  bootstrap: [AppComponent]
-})
-export class AppModule { }
-
-===========================================================================================
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -207,12 +95,154 @@ app.listen(4040, function(error){
         console.log("Server is now live on localhost : 4040")
     }
 })
-===========================================================================================
 
 
 
+================================================================================================
+import { ThrowStmt } from '@angular/compiler';
+import { Component, OnInit } from '@angular/core';
+import { HeroService } from './heroservices';
 
+@Component({
+  selector: 'app-root',
+  template : `
+  <h1>Add Hero</h1>
+  <label for="heroname"> Hero Name : </label>
+  <input [(ngModel)]="hero.username" id="heroname" type="text">
+  <br>
+  <label for="heromail"> Hero Mail : </label>
+  <input [(ngModel)]="hero.usermail" id="heromail" type="text">
+  <br>
+  <label for="herocity"> Hero City : </label>
+  <input [(ngModel)]="hero.usercity" id="herocity" type="text">
+  <br>
+  <button (click)="addHero()">Add New Hero</button>
+  <hr>
+  <h1>Heres List</h1>
+  <ol>
+    <li *ngFor="let hero of heroarray">
+     Name :  {{ hero.username }} | 
+     eMail : {{ hero.usermail }} |
+     City : {{ hero.usercity }}
+     <button (click)="editThisHero(hero)">Edit</button>
+     <button (click)="deleteThisHero(hero)">Delete</button>
+    </li>
+  </ol>
+  <div *ngIf="editReady">
+    <h1>Edit Hero</h1>
+      <label for="heroname"> Edit Hero Name : </label>
+      <input [(ngModel)]="ehero.username" id="heroname" type="text">
+      <br>
+      <label for="heromail"> Edit Hero Mail : </label>
+      <input [(ngModel)]="ehero.usermail" id="heromail" type="text">
+      <br>
+      <label for="herocity"> Edit Hero City : </label>
+      <input [(ngModel)]="ehero.usercity" id="herocity" type="text">
+      <br>
+      <button (click)="updateSelectedHero()">Update Hero</button>
+  </div>
+  `,
+})
+export class AppComponent implements OnInit{
+  title = 'steps';
+  heroarray;
+  editReady = false;
+  hero = {
+    username : '',
+    usermail : '',
+    usercity : ''
+  };
+  ehero = {};
+  constructor(private hs : HeroService){}
+  
+  ngOnInit(){
+    this.reload();
+  }
+  reload(){
+    this.hs.getHeros().subscribe( res => {
+      this.heroarray = res;
+    });
+  }
 
+  addHero(){
+    if(this.hero.username === '' && this.hero.usermail === '' && this.hero.usercity === ''){
+      alert("Values cant be black ")
+    }else{
+    this.hs.postHero(this.hero).subscribe( res => {
+      this.reload();
+      this.hero = {
+        username : '',
+        usermail : '',
+        usercity : ''
+      }
+    });
+  }
+  }
 
+  deleteThisHero(hero){
+    this.hs.deleteHero(hero).subscribe( res => {
+      this.reload();
+    })
+  }
+  editThisHero(hero){
+    this.hs.getSelectedHero(hero).subscribe( res => {
+      this.ehero = res ;
+     // alert(this.ehero.username);
+      this.editReady = true;
+    })
+  }
+  updateSelectedHero(){
+    this.hs.updateHero(this.ehero).subscribe( res => {
+      this.reload();
+      this.editReady = false;
+      this.ehero = {};
+    })
+  }
+}
 
+================================================================================================
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 
+@Injectable()
+export class HeroService{
+    constructor( private http:HttpClient ){}
+    getHeros(){
+        return this.http.get("http://localhost:4040/data");
+    }
+    postHero(hero){
+        return this.http.post("http://localhost:4040/data", hero);
+    }
+    getSelectedHero(hero){
+        return this.http.get("http://localhost:4040/data/"+hero._id);
+    }
+    updateHero(hero){
+        return this.http.post("http://localhost:4040/data/"+hero._id, hero);
+    }
+    deleteHero(hero){
+        console.log("delete was called");
+        return this.http.delete("http://localhost:4040/delete/"+hero._id);
+    }
+}
+================================================================================================
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import { HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
+
+import { AppComponent } from './app.component';
+import { HeroService } from './heroservices';
+
+@NgModule({
+  declarations: [
+    AppComponent
+  ],
+  imports: [
+    BrowserModule, HttpClientModule, FormsModule
+  ],
+  providers: [ HeroService ],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+
+================================================================================================
