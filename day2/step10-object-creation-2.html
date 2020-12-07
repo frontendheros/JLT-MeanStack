@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+       
+        let person = Object.create(null);
+        Object.defineProperty(person, "power", {
+            value : 5
+        } )
+
+        let hero = Object.create(person);
+
+        Object.defineProperties(hero, {
+            title : {
+                        value : "Batman",
+                        enumerable : true,
+                        writable : true
+                    },
+            city : {
+                        value : "Gotham",
+                        writable : true,
+                        enumerable : true,
+                        configurable : true
+                    },
+           titleAccess : {
+                        set : function(newTitle){
+                            this.title = newTitle
+                        },
+                        get : function(){
+                            return this.title
+                        }
+        }
+                
+        });
+
+        for(let prop in hero){
+            console.log("+++++++++++++++++++");
+            console.log(prop, hero[prop]);
+        };
+
+    </script>
+</head>
+<body>
+    
+</body>
+</html>
