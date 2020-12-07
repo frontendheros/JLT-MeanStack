@@ -44,16 +44,49 @@ app.get("/data", function(req, res){
 //----------------------------------------------
 // CREATE
 //----------------------------------------------
+app.post("/data", function(req, res){
+    let hero = new Hero(req.body);
+    hero.save().then( (nhero) => res.send(nhero) );
+})
 //----------------------------------------------
 // FIND HERO TO UPDATE
 //----------------------------------------------
+app.get("/data/:heroid", function(req, res){
+    Hero.findById(req.params.heroid, function(error, hero){
+        if(error){
+            handleError(error);
+        }else{
+            res.send(hero);
+        }
+    })
+});
 //----------------------------------------------
 // UPDATE
 //----------------------------------------------
+app.post("/data/:id", function(req, res){
+    Hero.findById(req.params.id, function(error, hero){
+        if(error){
+            handleError(error);
+        }else{
+            hero.username = req.body.username;
+            hero.usermail = req.body.usermail;
+            hero.usercity = req.body.usercity;
+            hero.save().then( nhero => res.send(nhero) );
+        }
+    })
+})
 //----------------------------------------------
 // DELETE
 //----------------------------------------------
-
+app.delete("/delete/:id", function(req, res){
+    Hero.findByIdAndDelete({_id: req.params.id}, function(error, hero){
+        if(error){
+            handleError(error);
+        }else{
+            res.send(hero+" was deleted");
+        }
+    })
+})
 //----------------------------------------------
 app.listen(4040, function(error){
     if(error){
