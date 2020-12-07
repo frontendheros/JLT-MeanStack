@@ -1,97 +1,22 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
-const bodyParser = require("body-parser");
-//----------------------------------------------
-let app = express();
-app.use(bodyParser.json());
-app.use(cors());
-//----------------------------------------------
-let handleError = function(error){
-    console.log("Error : ",error);
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+
+@Injectable()
+export class HeroService{
+    constructor( private http:HttpClient ){}
+    getHeros(){
+        return this.http.get("http://localhost:4040/data");
+    }
+    postHero(hero){
+        return this.http.post("http://localhost:4040/data", hero);
+    }
+    getSelectedHero(hero){
+        return this.http.get("http://localhost:4040/data/"+hero.id);
+    }
+    updateHero(hero){
+        return this.http.post("http://localhost:4040/data/"+hero.id, hero);
+    }
+    deleteHero(hero){
+        return this.http.delete("http://localhost:4040/delete/"+hero.id);
+    }
 }
-//----------------------------------------------
-let Schema = mongoose.Schema;
-let ObjectId = Schema.ObjectId;
-let Hero = mongoose.model("Hero", new Schema({
-    "id" : ObjectId,
-    "username" : String, 
-    "usermail" : String, 
-    "usercity" : String
-}));
-mongoose.Promise = global.Promise;
-let uri = "mongodb://127.0.0.1:27017/herodb"
-mongoose.connect(uri, { useNewUrlParser : true }).then( 
-    (response) => {
-    console.log("DataBase Connected");
-    },
-    (error) => {
-        handleError(error);
-    }
-);
-//----------------------------------------------
-// READ
-app.get("/data", function(req, res){
-    Hero.find( (error, heros) => {
-        if(error){
-            handleError(error);
-            res.end();
-        }else{
-            res.send(heros)
-        }
-    })
-});
-//----------------------------------------------
-// CREATE
-//----------------------------------------------
-app.post("/data", function(req, res){
-    let hero = new Hero(req.body);
-    hero.save().then( (nhero) => res.send(nhero) );
-})
-//----------------------------------------------
-// FIND HERO TO UPDATE
-//----------------------------------------------
-app.get("/data/:heroid", function(req, res){
-    Hero.findById(req.params.heroid, function(error, hero){
-        if(error){
-            handleError(error);
-        }else{
-            res.send(hero);
-        }
-    })
-});
-//----------------------------------------------
-// UPDATE
-//----------------------------------------------
-app.post("/data/:id", function(req, res){
-    Hero.findById(req.params.id, function(error, hero){
-        if(error){
-            handleError(error);
-        }else{
-            hero.username = req.body.username;
-            hero.usermail = req.body.usermail;
-            hero.usercity = req.body.usercity;
-            hero.save().then( nhero => res.send(nhero) );
-        }
-    })
-})
-//----------------------------------------------
-// DELETE
-//----------------------------------------------
-app.delete("/delete/:id", function(req, res){
-    Hero.findByIdAndDelete({_id: req.params.id}, function(error, hero){
-        if(error){
-            handleError(error);
-        }else{
-            res.send(hero+" was deleted");
-        }
-    })
-})
-//----------------------------------------------
-app.listen(4040, function(error){
-    if(error){
-        handleError(error) 
-    }else{
-        console.log("Server is now live on localhost : 4040")
-    }
-})
