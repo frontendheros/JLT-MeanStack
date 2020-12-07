@@ -1,3 +1,70 @@
+import { Component, OnInit } from '@angular/core';
+import { HeroService } from './heroservices';
+
+@Component({
+  selector: 'app-root',
+  template : `
+  <label for="heroname"> Hero Name : </label>
+  <input [(ngModel)]="hero.username" id="heroname" type="text">
+  <br>
+  <label for="heromail"> Hero Mail : </label>
+  <input [(ngModel)]="hero.usermail" id="heromail" type="text">
+  <br>
+  <label for="herocity"> Hero City : </label>
+  <input [(ngModel)]="hero.usercity" id="herocity" type="text">
+  <br>
+  <button (click)="addHero()">Add New Hero</button>
+  <hr>
+  <ol>
+    <li *ngFor="let hero of heroarray">
+     Name :  {{ hero.username }} | 
+     eMail : {{ hero.usermail }} |
+     City : {{ hero.usercity }}
+     <button (click)="editThisHero(hero)">Edit</button>
+     <button (click)="deleteThisHero(hero)">Delete</button>
+    </li>
+  </ol>
+  `,
+})
+export class AppComponent implements OnInit{
+  title = 'steps';
+  heroarray;
+  hero = {
+    username : '',
+    usermail : '',
+    usercity : ''
+  };
+  constructor(private hs : HeroService){}
+  
+  ngOnInit(){
+    this.reload();
+  }
+  reload(){
+    this.hs.getHeros().subscribe( res => {
+      this.heroarray = res;
+    });
+  }
+
+  addHero(){
+    this.hs.postHero(this.hero).subscribe( res => {
+      this.reload();
+      this.hero = {
+        username : '',
+        usermail : '',
+        usercity : ''
+      }
+    });
+  }
+
+  deleteThisHero(hero){
+    this.hs.deleteHero(hero).subscribe( res => {
+      this.reload();
+    })
+  }
+}
+
+
+===========================================================================================
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
@@ -11,12 +78,141 @@ export class HeroService{
         return this.http.post("http://localhost:4040/data", hero);
     }
     getSelectedHero(hero){
-        return this.http.get("http://localhost:4040/data/"+hero.id);
+        return this.http.get("http://localhost:4040/data/"+hero._id);
     }
     updateHero(hero){
-        return this.http.post("http://localhost:4040/data/"+hero.id, hero);
+        return this.http.post("http://localhost:4040/data/"+hero._id, hero);
     }
     deleteHero(hero){
-        return this.http.delete("http://localhost:4040/delete/"+hero.id);
+        console.log("delete was called");
+        return this.http.delete("http://localhost:4040/delete/"+hero._id);
     }
 }
+===========================================================================================
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import { HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
+
+import { AppComponent } from './app.component';
+import { HeroService } from './heroservices';
+
+@NgModule({
+  declarations: [
+    AppComponent
+  ],
+  imports: [
+    BrowserModule, HttpClientModule, FormsModule
+  ],
+  providers: [ HeroService ],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+
+===========================================================================================
+const express = require("express");
+const mongoose = require("mongoose");
+const cors = require("cors");
+const bodyParser = require("body-parser");
+//----------------------------------------------
+let app = express();
+app.use(bodyParser.json());
+app.use(cors());
+//----------------------------------------------
+let handleError = function(error){
+    console.log("Error : ",error);
+}
+//----------------------------------------------
+let Schema = mongoose.Schema;
+let ObjectId = Schema.ObjectId;
+let Hero = mongoose.model("Hero", new Schema({
+    "id" : ObjectId,
+    "username" : String, 
+    "usermail" : String, 
+    "usercity" : String
+}));
+mongoose.Promise = global.Promise;
+let uri = "mongodb://127.0.0.1:27017/herodb"
+mongoose.connect(uri, { useNewUrlParser : true }).then( 
+    (response) => {
+    console.log("DataBase Connected");
+    },
+    (error) => {
+        handleError(error);
+    }
+);
+//----------------------------------------------
+// READ
+app.get("/data", function(req, res){
+    Hero.find( (error, heros) => {
+        if(error){
+            handleError(error);
+            res.end();
+        }else{
+            res.send(heros)
+        }
+    })
+});
+//----------------------------------------------
+// CREATE
+//----------------------------------------------
+app.post("/data", function(req, res){
+    let hero = new Hero(req.body);
+    hero.save().then( (nhero) => res.send(nhero) );
+})
+//----------------------------------------------
+// FIND HERO TO UPDATE
+//----------------------------------------------
+app.get("/data/:heroid", function(req, res){
+    Hero.findById(req.params.heroid, function(error, hero){
+        if(error){
+            handleError(error);
+        }else{
+            res.send(hero);
+        }
+    })
+});
+//----------------------------------------------
+// UPDATE
+//----------------------------------------------
+app.post("/data/:id", function(req, res){
+    Hero.findById(req.params.id, function(error, hero){
+        if(error){
+            handleError(error);
+        }else{
+            hero.username = req.body.username;
+            hero.usermail = req.body.usermail;
+            hero.usercity = req.body.usercity;
+            hero.save().then( nhero => res.send(nhero) );
+        }
+    })
+})
+//----------------------------------------------
+// DELETE
+//----------------------------------------------
+app.delete("/delete/:id", function(req, res){
+    Hero.findByIdAndDelete({_id: req.params.id}, function(error, hero){
+        if(error){
+            handleError(error);
+        }else{
+            res.send({ "deletedhero" : hero });
+        }
+    })
+})
+//----------------------------------------------
+app.listen(4040, function(error){
+    if(error){
+        handleError(error) 
+    }else{
+        console.log("Server is now live on localhost : 4040")
+    }
+})
+===========================================================================================
+
+
+
+
+
+
+
+
