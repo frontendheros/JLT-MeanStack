@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script type="module">
+        import { Hero } from "./classes/Hero.js";
+
+        document.addEventListener("DOMContentLoaded", function(){
+            let hero = new Hero("Ironman", "tony", "stark");
+            document.getElementById("logname").textContent = hero.fullname().toUpperCase();
+        })
+    </script>
+</head>
+<body>
+    <h1>Hero's Full Name : <span id="logname"></span></h1>
+</body>
+</html>

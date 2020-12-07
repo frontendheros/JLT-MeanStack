@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        /*
+        let composition = function(fun1, fun2){
+            return function(num){
+                return fun1( fun2( num ) );
+            }
+        };
+        function firstFun( val ){
+            return val * val
+        };
+        
+        function secondFun( val ){
+            return val + val
+        };
+
+        let comp = composition(firstFun, secondFun);
+            console.log( comp(5) );
+        */
+
+        function addPower(pow){
+            return function(person){
+                return {
+                    title : person.title,
+                    power : pow
+                }
+            }
+        };
+
+        let commonman = {
+            title : "Bruce"
+        };
+/*
+        let heroInTheMaking = addPower(5);
+            console.log(heroInTheMaking(commonman));
+*/
+        commonman = addPower(5)(commonman);
+        console.log(commonman);
+        
+    </script>
+</head>
+<body>
+    
+</body>
+</html>
