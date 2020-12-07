@@ -1,0 +1,64 @@
+const express = require("express");
+const mongoose = require("mongoose");
+const cors = require("cors");
+const bodyParser = require("body-parser");
+//----------------------------------------------
+let app = express();
+app.use(bodyParser.json());
+app.use(cors());
+//----------------------------------------------
+let handleError = function(error){
+    console.log("Error : ",error);
+}
+//----------------------------------------------
+let Schema = mongoose.Schema;
+let ObjectId = Schema.ObjectId;
+let Hero = mongoose.model("Hero", new Schema({
+    "id" : ObjectId,
+    "username" : String, 
+    "usermail" : String, 
+    "usercity" : String
+}));
+mongoose.Promise = global.Promise;
+let uri = "mongodb://127.0.0.1:27017/herodb"
+mongoose.connect(uri, { useNewUrlParser : true }).then( 
+    (response) => {
+    console.log("DataBase Connected");
+    },
+    (error) => {
+        handleError(error);
+    }
+);
+//----------------------------------------------
+// READ
+app.get("/data", function(req, res){
+    Hero.find( (error, heros) => {
+        if(error){
+            handleError(error);
+            res.end();
+        }else{
+            res.send(heros)
+        }
+    })
+});
+//----------------------------------------------
+// CREATE
+//----------------------------------------------
+//----------------------------------------------
+// FIND HERO TO UPDATE
+//----------------------------------------------
+//----------------------------------------------
+// UPDATE
+//----------------------------------------------
+//----------------------------------------------
+// DELETE
+//----------------------------------------------
+
+//----------------------------------------------
+app.listen(4040, function(error){
+    if(error){
+        handleError(error) 
+    }else{
+        console.log("Server is now live on localhost : 4040")
+    }
+})
